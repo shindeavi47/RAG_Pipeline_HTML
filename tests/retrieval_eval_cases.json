@@ -1,0 +1,67 @@
+{
+  "top_k": 3,
+  "cases": [
+    {
+      "id": "required-test-run-arguments",
+      "question": "Which arguments are required for a normal test execution?",
+      "expected_heading_paths": ["Regression Manager > 4. Required arguments"]
+    },
+    {
+      "id": "parallel-worker-count",
+      "question": "What is the default worker count for parallel runs, and what range is allowed?",
+      "expected_heading_paths": [
+        "Regression Manager > 5. Optional arguments",
+        "Regression Manager > 6. Feature recipes > Parallel execution"
+      ]
+    },
+    {
+      "id": "failed-test-retry-count",
+      "question": "How many extra attempts can failed tests get, and what does the retry count include?",
+      "expected_heading_paths": [
+        "Regression Manager > 5. Optional arguments",
+        "Regression Manager > 6. Feature recipes > Rerun failures"
+      ]
+    },
+    {
+      "id": "rerun-previous-failures",
+      "question": "How do I rerun only failures from a previous run?",
+      "expected_heading_paths": [
+        "Regression Manager > 5. Optional arguments",
+        "Regression Manager > 6. Feature recipes > Rerun a previous run's failures"
+      ]
+    },
+    {
+      "id": "test-selector-exclusivity",
+      "question": "Can I combine --tests and --tag in one command?",
+      "expected_heading_paths": [
+        "Regression Manager > 5. Optional arguments",
+        "Regression Manager > 8. Validation and compatibility rules"
+      ]
+    },
+    {
+      "id": "dry-run-behavior",
+      "question": "How can I validate a command without starting test execution?",
+      "expected_heading_paths": [
+        "Regression Manager > 5. Optional arguments",
+        "Regression Manager > 6. Feature recipes > Preview without running tests"
+      ]
+    },
+    {
+      "id": "exit-code-meanings",
+      "question": "What do exit codes 2 and 3 mean?",
+      "expected_heading_paths": ["Regression Manager > 9. Exit codes"]
+    },
+    {
+      "id": "clarify-rerun-intent",
+      "question": "Rerun failed tests.",
+      "expected_heading_paths": [
+        "Regression Manager > 8. Validation and compatibility rules > Agent behavior when information is missing"
+      ]
+    },
+    {
+      "id": "environment-selection",
+      "question": "Which environments can --env select, and what happens if I omit it?",
+      "expected_heading_paths": ["Regression Manager > 5. Optional arguments"]
+    }
+  ]
+}

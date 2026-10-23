@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regression Manager CLI — Sample Documentation</title>
+<style>
+  :root {
+    --bg: #f5f7fb; --panel: #ffffff; --text: #172033; --muted: #596579;
+    --border: #dbe2ee; --accent: #3157c8; --accent-soft: #eaf0ff;
+    --code: #111827; --code-text: #e5edf9; --green: #087443; --amber: #8b5b00;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color: var(--text); background: var(--bg); line-height: 1.6; }
+  header { padding: 2.5rem max(1.2rem, calc((100% - 1120px)/2)); background: linear-gradient(130deg, #14264f, #3157c8); color: white; }
+  header h1 { margin: 0 0 .4rem; font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.15; }
+  header p { max-width: 850px; margin: .5rem 0 0; color: #e0e8ff; }
+  .pill { display: inline-block; border: 1px solid #9fb5ff; border-radius: 999px; padding: .15rem .65rem; font-size: .8rem; margin-bottom: .7rem; }
+  .layout { max-width: 1120px; margin: 1.5rem auto; padding: 0 1rem; display: grid; grid-template-columns: 245px minmax(0, 1fr); gap: 1.3rem; align-items: start; }
+  nav, main section { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; }
+  nav { padding: 1rem; position: sticky; top: 1rem; }
+  nav strong { display: block; margin-bottom: .6rem; }
+  nav a { display: block; color: var(--accent); text-decoration: none; padding: .28rem 0; font-size: .92rem; }
+  nav a:hover { text-decoration: underline; }
+  main { min-width: 0; }
+  main section { padding: clamp(1rem, 3vw, 1.6rem); margin-bottom: 1rem; scroll-margin-top: 1rem; }
+  h2 { font-size: 1.45rem; margin: 0 0 .75rem; }
+  h3 { font-size: 1.08rem; margin: 1.3rem 0 .45rem; }
+  p, li { color: #303b50; }
+  .note, .warning, .success { border-radius: 9px; padding: .8rem 1rem; margin: .8rem 0; }
+  .note { background: var(--accent-soft); border-left: 4px solid var(--accent); }
+  .warning { background: #fff5dd; border-left: 4px solid #d99a16; }
+  .success { background: #e7f7ef; border-left: 4px solid #1a8a58; }
+  pre { background: var(--code); color: var(--code-text); border-radius: 10px; padding: 1rem; overflow-x: auto; white-space: pre; }
+  code, kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  p code, li code, td code { background: #eef1f7; padding: .12rem .32rem; border-radius: 4px; color: #172033; }
+  table { width: 100%; border-collapse: collapse; margin: .7rem 0 1rem; font-size: .93rem; }
+  th, td { border: 1px solid var(--border); padding: .65rem; text-align: left; vertical-align: top; }
+  th { background: #f0f3fa; }
+  .required { color: #a32222; font-weight: 700; }
+  .optional { color: var(--green); font-weight: 700; }
+  .small { font-size: .88rem; color: var(--muted); }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; }
+  .card { border: 1px solid var(--border); border-radius: 10px; padding: .9rem; }
+  .card h3 { margin-top: 0; }
+  footer { max-width: 1120px; padding: 0 1rem 2rem; margin: auto; color: var(--muted); font-size: .88rem; }
+  @media (max-width: 800px) { .layout { grid-template-columns: 1fr; } nav { position: static; } nav div { columns: 2; } .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <span class="pill">Illustrative sample CLI reference</span>
+  <h1>Regression Manager</h1>
+  <p>Command-line reference for a fictional Java-based regression test runner. This document defines an example command syntax for prototyping a documentation-grounded CLI assistant. These flags are invented for this sample and are not a reference for any real product.</p>
+</header>
+
+<div class="layout">
+<nav aria-label="Documentation navigation">
+  <strong>On this page</strong>
+  <div>
+    <a href="#overview">Overview</a>
+    <a href="#requirements">Requirements</a>
+    <a href="#syntax">Command syntax</a>
+    <a href="#required">Required arguments</a>
+    <a href="#options">Optional arguments</a>
+    <a href="#features">Feature recipes</a>
+    <a href="#examples">Examples</a>
+    <a href="#rules">Validation rules</a>
+    <a href="#exit-codes">Exit codes</a>
+    <a href="#agent">Agent-building notes</a>
+  </div>
+</nav>
+
+<main>
+<section id="overview">
+  <h2>1. Overview</h2>
+  <p><strong>Regression Manager</strong> is a fictional Java command-line application that launches regression test suites, selects environments and test groups, controls parallel execution, reruns failed tests, and writes reports.</p>
+  <div class="note"><strong>Purpose of this document:</strong> provide a realistic, internally consistent example of CLI documentation for developing an LLM agent. The command names, flags, defaults, and behaviors below are sample conventions only.</div>
+  <h3>Typical tasks</h3>
+  <ul>
+    <li>Run a complete regression suite or a selected test group.</li>
+    <li>Choose a configuration properties file and target environment.</li>
+    <li>Run tests in parallel with a specified number of workers.</li>
+    <li>Rerun failed tests after the first execution.</li>
+    <li>Set the application version/build label and output directory.</li>
+    <li>Generate HTML, JUnit XML, or both report formats.</li>
+    <li>Preview the effective settings or print the tool version without running tests.</li>
+  </ul>
+</section>
+
+<section id="requirements">
+  <h2>2. Requirements and assumptions</h2>
+  <ul>
+    <li>Java 17 or later is assumed for this fictional tool.</li>
+    <li>The application JAR is named <code>regression-manager.jar</code>.</li>
+    <li>Commands are shown for a POSIX-style shell. Windows PowerShell and Command Prompt have different quoting and line-continuation rules.</li>
+    <li>Paths may be absolute or relative to the current working directory.</li>
+  </ul>
+  <pre><code>java -version
+java -jar regression-manager.jar --help
+java -jar regression-manager.jar --version</code></pre>
+  <p class="small">The help and version flags are designed to work without the normal test-run arguments.</p>
+</section>
+
+<section id="syntax">
+  <h2>3. Command syntax</h2>
+  <pre><code>java -jar regression-manager.jar
+  --suite &lt;suite-name&gt;
+  --config &lt;path&gt;
+  [--env &lt;environment&gt;]
+  [--tests &lt;selector&gt;]
+  [--version-label &lt;label&gt;]
+  [--parallel]
+  [--threads &lt;count&gt;]
+  [--rerun-failed]
+  [--rerun-count &lt;count&gt;]
+  [--rerun-only]
+  [--results-dir &lt;path&gt;]
+  [--report &lt;html|junit|all&gt;]
+  [--tag &lt;tag&gt;]
+  [--timeout-seconds &lt;seconds&gt;]
+  [--dry-run]
+  [--verbose]</code></pre>
+  <p>Angle-bracket values are placeholders and must be replaced. Square brackets indicate optional arguments. Do not type the brackets themselves.</p>
+  <h3>Command structure</h3>
+  <ol>
+    <li><code>java</code> starts the Java runtime.</li>
+    <li><code>-jar regression-manager.jar</code> identifies the executable JAR.</li>
+    <li>Arguments after the JAR are interpreted by Regression Manager.</li>
+  </ol>
+  <div class="warning"><strong>Important:</strong> the literal argument <code>--version</code> prints the Regression Manager software version. The separate <code>--version-label</code> argument labels a test run, such as <code>build-2026.10.20</code>.</div>
+</section>
+
+<section id="required">
+  <h2>4. Required arguments</h2>
+  <table>
+    <thead><tr><th>Argument</th><th>Value</th><th>Description</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><code>--suite</code></td><td><code>&lt;suite-name&gt;</code></td><td><span class="required">Required for test runs.</span> Name of the registered suite to execute. Allowed sample values: <code>smoke</code>, <code>regression</code>, <code>full</code>.</td><td><code>--suite regression</code></td></tr>
+      <tr><td><code>--config</code></td><td><code>&lt;path&gt;</code></td><td><span class="required">Required for test runs.</span> Properties file containing application URL, credentials references, timeouts, and other environment settings.</td><td><code>--config ./config/qa.properties</code></td></tr>
+    </tbody>
+  </table>
+  <p>Both required arguments are mandatory for a normal test execution. They are not required when using the standalone <code>--help</code> or <code>--version</code> action.</p>
+</section>
+
+<section id="options">
+  <h2>5. Optional arguments</h2>
+  <table>
+    <thead><tr><th>Argument</th><th>Value / default</th><th>Description and rules</th></tr></thead>
+    <tbody>
+      <tr><td><code>--env</code></td><td><code>dev</code>, <code>qa</code>, <code>staging</code>, <code>prod</code>; default: config-defined</td><td>Overrides the environment selector in the config file. Production runs should be explicitly approved by the surrounding process.</td></tr>
+      <tr><td><code>--tests</code></td><td>Selector; default: all tests in suite</td><td>Select tests by comma-separated IDs or a documented selector, for example <code>PAY-101,PAY-102</code>. Do not combine with <code>--tag</code> in this sample CLI.</td></tr>
+      <tr><td><code>--tag</code></td><td>Tag name</td><td>Run tests matching a tag such as <code>critical</code> or <code>checkout</code>. Mutually exclusive with <code>--tests</code>.</td></tr>
+      <tr><td><code>--version-label</code></td><td>Text; default: not set</td><td>Attach a build or release label to run metadata and reports. Example: <code>--version-label release-4.8.1</code>.</td></tr>
+      <tr><td><code>--parallel</code></td><td>Boolean flag; default: off</td><td>Enable concurrent test execution.</td></tr>
+      <tr><td><code>--threads</code></td><td>Integer 1–32; default: 4 when parallel is enabled</td><td>Worker count. Requires <code>--parallel</code> in this sample CLI. A value of 1 is permitted but offers no concurrency benefit.</td></tr>
+      <tr><td><code>--rerun-failed</code></td><td>Boolean flag; default: off</td><td>After the initial run, rerun tests that failed. Only failed tests are selected for retry.</td></tr>
+      <tr><td><code>--rerun-count</code></td><td>Integer 1–5; default: 1</td><td>Maximum number of additional attempts for each failed test. Requires <code>--rerun-failed</code>. The initial attempt is not included in this count.</td></tr>
+      <tr><td><code>--rerun-only</code></td><td>Boolean flag; default: off</td><td>Run only tests recorded as failed in a previous run. Requires <code>--previous-run</code>.</td></tr>
+      <tr><td><code>--previous-run</code></td><td>Run ID</td><td>Identifies an earlier run for <code>--rerun-only</code>, e.g. <code>--previous-run RM-20261020-001</code>.</td></tr>
+      <tr><td><code>--results-dir</code></td><td>Path; default: <code>./results</code></td><td>Directory for logs and reports. The tool creates it if permitted by filesystem permissions.</td></tr>
+      <tr><td><code>--report</code></td><td><code>html</code>, <code>junit</code>, <code>all</code>; default: <code>html</code></td><td>Report formats to generate. <code>all</code> creates HTML and JUnit XML output.</td></tr>
+      <tr><td><code>--timeout-seconds</code></td><td>Positive integer; default: 1800</td><td>Maximum total run duration in seconds. A timeout marks unfinished work as timed out.</td></tr>
+      <tr><td><code>--dry-run</code></td><td>Boolean flag; default: off</td><td>Validate arguments and print the planned execution without starting tests.</td></tr>
+      <tr><td><code>--verbose</code></td><td>Boolean flag; default: off</td><td>Print more diagnostic output to the console.</td></tr>
+      <tr><td><code>--help</code>, <code>-h</code></td><td>Standalone action</td><td>Print usage information and exit. Does not execute tests.</td></tr>
+      <tr><td><code>--version</code></td><td>Standalone action</td><td>Print the installed Regression Manager version and exit.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="features">
+  <h2>6. Feature recipes</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Basic regression run</h3>
+      <pre><code>java -jar regression-manager.jar \
+  --suite regression \
+  --config ./config/qa.properties</code></pre>
+      <p>Runs the named suite using the settings in the specified properties file.</p>
+    </div>
+    <div class="card">
+      <h3>Parallel execution</h3>
+      <pre><code>java -jar regression-manager.jar \
+  --suite regression \
+  --config ./config/qa.properties \
+  --parallel \
+  --threads 6</code></pre>
+      <p>Runs the suite with six workers. The thread count is valid only with <code>--parallel</code>.</p>
+    </div>
+    <div class="card">
+      <h3>Rerun failures</h3>
+      <pre><code>java -jar regression-manager.jar \
+  --suite regression \
+  --config ./config/qa.properties \
+  --rerun-failed \
+  --rerun-count 2</code></pre>
+      <p>Performs the initial run and allows up to two additional attempts for each failed test.</p>
+    </div>
+    <div class="card">
+      <h3>Rerun a previous run's failures</h3>
+      <pre><code>java -jar regression-manager.jar \
+  --suite regression \
+  --config ./config/qa.properties \
+  --rerun-only \
+  --previous-run RM-20261020-001</code></pre>
+      <p>Runs only tests marked failed in the referenced earlier run. It does not run the full suite first.</p>
+    </div>
+    <div class="card">
+      <h3>Set build version and reports</h3>
+      <pre><code>java -jar regression-manager.jar \
+  --suite full \
+  --config ./config/staging.properties \
+  --version-label release-4.8.1 \
+  --report all \
+  --results-dir ./artifacts/release-4.8.1</code></pre>
+      <p>Labels the run and writes both report formats under the selected output directory.</p>
+    </div>
+    <div class="card">
+      <h3>Preview without running tests</h3>
+      <pre><code>java -jar regression-manager.jar \
+  --suite regression \
+  --config ./config/qa.properties \
+  --parallel \
+  --threads 4 \
+  --dry-run</code></pre>
+      <p>Checks the proposed arguments and displays the planned run without starting test execution.</p>
+    </div>
+  </div>
+</section>
+
+<section id="examples">
+  <h2>7. Complete examples</h2>
+  <h3>Example A — Select tests by ID</h3>
+  <pre><code>java -jar regression-manager.jar --suite regression --config "./config/qa.properties" --tests "PAY-101,PAY-102" --report all</code></pre>
+  <h3>Example B — Tagged tests with a run label</h3>
+  <pre><code>java -jar regression-manager.jar --suite smoke --config "./config/staging.properties" --tag critical --version-label "build-2026.10.20" --results-dir "./results/build-2026.10.20"</code></pre>
+  <h3>Example C — Parallel run with retry and verbose logging</h3>
+  <pre><code>java -jar regression-manager.jar --suite regression --config "./config/qa.properties" --parallel --threads 8 --rerun-failed --rerun-count 3 --report all --verbose</code></pre>
+  <h3>Example D — Check the application version</h3>
+  <pre><code>java -jar regression-manager.jar --version</code></pre>
+  <h3>Example E — Validate a command before execution</h3>
+  <pre><code>java -jar regression-manager.jar --suite regression --config "./config/qa.properties" --parallel --threads 4 --dry-run</code></pre>
+  <div class="note">When displaying commands in a chat interface, preserve quoting around paths or values that may contain spaces. Prefer rendering a shell-safe command string from an argument list rather than concatenating untrusted text into a shell command.</div>
+</section>
+
+<section id="rules">
+  <h2>8. Validation and compatibility rules</h2>
+  <ol>
+    <li>For normal test execution, both <code>--suite</code> and <code>--config</code> are required.</li>
+    <li><code>--help</code> and <code>--version</code> are standalone actions and cannot be combined with test-run arguments.</li>
+    <li><code>--threads</code> requires <code>--parallel</code>; accepted values are integers from 1 through 32.</li>
+    <li><code>--rerun-count</code> requires <code>--rerun-failed</code>; accepted values are integers from 1 through 5.</li>
+    <li><code>--rerun-only</code> requires <code>--previous-run</code>.</li>
+    <li><code>--rerun-only</code> cannot be combined with <code>--rerun-failed</code> in the same invocation.</li>
+    <li><code>--tests</code> and <code>--tag</code> are mutually exclusive.</li>
+    <li><code>--report</code> must be one of <code>html</code>, <code>junit</code>, or <code>all</code>.</li>
+    <li><code>--timeout-seconds</code> must be a positive integer.</li>
+    <li>Paths must exist where required: the JAR and configuration file must be readable. The results directory must be writable or creatable.</li>
+    <li>Unknown flags should cause a validation error rather than being silently ignored.</li>
+  </ol>
+  <h3>Agent behavior when information is missing</h3>
+  <p>If a request says “rerun failed tests” but does not say whether to retry failures from a new run or rerun a previous run, ask a clarifying question. If the user asks for parallel execution but omits the worker count, use the documented default only if the agent is configured to apply documented defaults; otherwise ask.</p>
+</section>
+
+<section id="exit-codes">
+  <h2>9. Exit codes</h2>
+  <table>
+    <thead><tr><th>Code</th><th>Meaning</th><th>Suggested handling</th></tr></thead>
+    <tbody>
+      <tr><td><code>0</code></td><td>Command completed successfully and all selected tests passed, or a standalone informational action succeeded.</td><td>Read the generated report for details.</td></tr>
+      <tr><td><code>1</code></td><td>One or more tests failed.</td><td>Review failed test details; rerun if appropriate.</td></tr>
+      <tr><td><code>2</code></td><td>Invalid arguments or incompatible options.</td><td>Correct the command using the usage text.</td></tr>
+      <tr><td><code>3</code></td><td>Configuration file missing or invalid.</td><td>Check the config path and required properties.</td></tr>
+      <tr><td><code>4</code></td><td>Execution timed out.</td><td>Inspect logs and consider whether a longer timeout is appropriate.</td></tr>
+      <tr><td><code>5</code></td><td>Unexpected internal error.</td><td>Save verbose logs and investigate the underlying failure.</td></tr>
+    </tbody>
+  </table>
+  <p class="small">Exit codes are proposed conventions for this sample tool, not codes from an actual executable.</p>
+</section>
+
+<section id="agent">
+  <h2>10. Notes for building a CLI-generation agent</h2>
+  <ol>
+    <li><strong>Use this HTML as a knowledge source.</strong> Parse headings, tables, lists, and code examples; preserve the association between each flag and its constraints.</li>
+    <li><strong>Retrieve relevant sections.</strong> For a request about retries, provide the agent with the rerun option descriptions, examples, and validation rules rather than the entire document if the context window is limited.</li>
+    <li><strong>Extract intent into structured fields.</strong> For example: suite, config path, parallel flag, worker count, retry mode, retry count, version label, and report format.</li>
+    <li><strong>Validate deterministically in code.</strong> Check required arguments, value ranges, mutually exclusive options, and dependencies after the LLM returns structured data.</li>
+    <li><strong>Build the command from an argument list.</strong> Use a defined flag map rather than asking the LLM to invent command syntax. Quote the displayed command for the target shell.</li>
+    <li><strong>Ask follow-up questions when needed.</strong> Do not guess a suite, config file, previous run ID, or unsupported feature.</li>
+    <li><strong>Separate generation from execution.</strong> Display the command first. If execution is added later, require an explicit user action and use safe process invocation with argument arrays, not shell concatenation.</li>
+    <li><strong>Test the agent with examples.</strong> Include valid requests, missing required arguments, unknown flags, conflicting flags, invalid counts, paths with spaces, and follow-up changes to prior requests.</li>
+  </ol>
+  <div class="success"><strong>Suggested first milestone:</strong> the agent accepts a chat request, returns a structured intent object, validates it against these rules, and displays the exact command plus a short explanation. It does not execute the Java process.</div>
+</section>
+</main>
+</div>
+
+<footer>
+  <p>Regression Manager CLI — sample documentation, version 1.0. Created for local agent prototyping. All commands, flags, defaults, behaviors, and exit codes are fictional examples and must be replaced or verified against the real tool before use.</p>
+</footer>
+</body>
+</html>
