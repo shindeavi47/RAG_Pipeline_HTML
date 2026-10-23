@@ -32,7 +32,7 @@ This project eliminates the manual overhead of mapping documentation requirement
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com
+   git clone https://github.com/shindeavi47/RAG_Pipeline_HTML/
    cd RAG_Pipeline_HTML
    ```
 
