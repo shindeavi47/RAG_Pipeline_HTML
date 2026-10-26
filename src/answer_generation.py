@@ -2,11 +2,9 @@ from __future__ import annotations
 
 import argparse
 import json
-import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from typing import Literal
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -17,13 +15,13 @@ if __package__ in (None, ""):
     from src.embeddings import EmbeddingService
     from src.ingestion import load_document
     from src.retrieval import RetrievalService
-    from src.vector_store import VectorStore
+    from src.vector_store import DEFAULT_PERSIST_DIRECTORY, VectorStore
 else:
     from .chunking import chunk_sections
     from .embeddings import EmbeddingService
     from .ingestion import load_document
     from .retrieval import RetrievalService
-    from .vector_store import VectorStore
+    from .vector_store import DEFAULT_PERSIST_DIRECTORY, VectorStore
 
 
 OLLAMA_CHAT_URL = "http://127.0.0.1:11434/api/chat"
@@ -175,37 +173,26 @@ def format_generated_answer(answer: GeneratedAnswer) -> str:
     return "\n".join(lines)
 
 
-def _answer_with_temporary_index(question: str, persist_directory: str) -> None:
-    source_path = (
-        Path(__file__).resolve().parents[1]
-        / "documents"
-        / "regression_manager_cli_documentation.html"
-    )
-    sections = load_document(source_path)
-    chunks = chunk_sections(sections)
+def _answer_with_persistent_index(question: str) -> None:
     embeddings = EmbeddingService()
-    chunk_embeddings = embeddings.embed_chunks(chunks)
     vector_store = VectorStore(
         embedding_model=embeddings.model_name,
         embedding_revision=embeddings.model_revision,
         embedding_dimension=embeddings.dimension,
-        persist_directory=persist_directory,
+        persist_directory=DEFAULT_PERSIST_DIRECTORY,
     )
     try:
-        vector_store.rebuild_index(chunks, chunk_embeddings)
+        if vector_store.count() == 0:
+            source_path = (
+                Path(__file__).resolve().parents[1]
+                / "documents"
+                / "regression_manager_cli_documentation.html"
+            )
+            sections = load_document(source_path)
+            chunks = chunk_sections(sections)
+            chunk_embeddings = embeddings.embed_chunks(chunks)
+            vector_store.rebuild_index(chunks, chunk_embeddings)
 
-        # records = vector_store._collection.get(
-        #     include=["documents", "metadatas", "embeddings"]
-        # )
-        # for i, chunk_id in enumerate(records["ids"]):
-        #     print(f"ID: {chunk_id}")
-        #     print(f"Metadata: {records['metadatas'][i]}")
-        #     print(f"Text: {records['documents'][i]}")
-        #     embedding = records["embeddings"][i]
-        #     print(f"Embedding: {len(embedding)} dimensions; first 8 values: {embedding[:8]}")
-        #     print()
-
-        retrieval = RetrievalService(embeddings, vector_store)
         retrieval = RetrievalService(embeddings, vector_store)
         generator = AnswerGenerator(retrieval)
         answer = generator.answer(question)
@@ -224,35 +211,13 @@ def main() -> None:
         nargs="?",
         help="Question to answer; if omitted, the script prompts for one.",
     )
-    parser.add_argument("--worker-db", help=argparse.SUPPRESS)
     args = parser.parse_args()
-
-    if args.worker_db:
-        if not args.question:
-            parser.error("the internal worker requires a question.")
-        _answer_with_temporary_index(args.question, args.worker_db)
-        return
 
     question = args.question or input("Ask a question about Regression Manager: ").strip()
     if not question:
         parser.error("question must not be empty.")
 
-    project_root = Path(__file__).resolve().parents[1]
-    with TemporaryDirectory(prefix="test-generate-chroma-") as temporary_directory:
-        result = subprocess.run(
-            [
-                sys.executable,
-                "-m",
-                "src.answer_generation",
-                "--worker-db",
-                temporary_directory,
-                question,
-            ],
-            cwd=project_root,
-            check=False,
-        )
-        if result.returncode:
-            raise SystemExit(result.returncode)
+    _answer_with_persistent_index(question)
 
 
 if __name__ == "__main__":
